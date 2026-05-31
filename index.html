@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOIR — Curated Objects</title>
+  <meta name="description" content="NOIR — A curated selection of premium objects. Built as a portfolio project." />
+
+  <!-- Google Fonts: Cormorant Garamond (editorial display) + DM Mono (UI labels) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER / NAV
+  ============================================================ -->
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+
+      <!-- Left: nav links -->
+      <nav class="nav-left" aria-label="Main navigation">
+        <a href="#shop" class="nav-link" onclick="showView('shop')">Shop</a>
+        <a href="#about" class="nav-link" onclick="showView('about')">About</a>
+      </nav>
+
+      <!-- Centre: wordmark -->
+      <a href="#" class="wordmark" onclick="showView('shop'); return false;">NOIR</a>
+
+      <!-- Right: cart trigger -->
+      <div class="nav-right">
+        <button class="cart-trigger" id="cart-trigger" onclick="toggleCart()" aria-label="Open cart">
+          Cart
+          <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       HERO SECTION (shown on first load)
+  ============================================================ -->
+  <section class="hero" id="hero-section">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">SS 2025 Collection</p>
+      <h1 class="hero-headline">Objects<br /><em>of desire.</em></h1>
+      <p class="hero-body">A curated selection of things worth owning.<br />No noise. No clutter. Just the good stuff.</p>
+      <button class="btn-primary" onclick="scrollToProducts()">Explore the collection</button>
+    </div>
+    <!-- Decorative geometric accent -->
+    <div class="hero-accent" aria-hidden="true"></div>
+  </section>
+
+
+  <!-- ============================================================
+       SHOP VIEW — Product listing + filters
+  ============================================================ -->
+  <main class="shop-view" id="shop-view">
+
+    <!-- Filter / sort bar -->
+    <div class="filter-bar">
+      <div class="filter-group" role="group" aria-label="Filter by category">
+        <button class="filter-btn active" data-filter="all" onclick="filterProducts('all', this)">All</button>
+        <button class="filter-btn" data-filter="lighting" onclick="filterProducts('lighting', this)">Lighting</button>
+        <button class="filter-btn" data-filter="furniture" onclick="filterProducts('furniture', this)">Furniture</button>
+        <button class="filter-btn" data-filter="objects" onclick="filterProducts('objects', this)">Objects</button>
+        <button class="filter-btn" data-filter="textiles" onclick="filterProducts('textiles', this)">Textiles</button>
+      </div>
+
+      <div class="sort-group">
+        <label for="sort-select" class="sr-only">Sort products</label>
+        <select id="sort-select" class="sort-select" onchange="sortProducts(this.value)">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="name-asc">Name: A → Z</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Product count label -->
+    <p class="product-count" id="product-count">Showing 12 items</p>
+
+    <!-- Product grid -->
+    <div class="product-grid" id="product-grid" role="list" aria-label="Products">
+      <!-- Cards injected by JS -->
+    </div>
+
+  </main>
+
+
+  <!-- ============================================================
+       PRODUCT DETAIL VIEW
+  ============================================================ -->
+  <section class="detail-view" id="detail-view" hidden aria-label="Product detail">
+    <button class="back-btn" onclick="showView('shop')">← Back to shop</button>
+
+    <div class="detail-inner">
+
+      <!-- Product image -->
+      <div class="detail-image-wrap">
+        <div class="detail-image" id="detail-image" role="img" aria-label="Product image"></div>
+        <div class="detail-image-label" id="detail-image-label"></div>
+      </div>
+
+      <!-- Product info -->
+      <div class="detail-info">
+        <p class="detail-category" id="detail-category"></p>
+        <h2 class="detail-title" id="detail-title"></h2>
+        <p class="detail-price" id="detail-price"></p>
+        <p class="detail-description" id="detail-description"></p>
+
+        <!-- Quantity selector -->
+        <div class="qty-row">
+          <label for="qty-input" class="qty-label">Qty</label>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="adjustQty(-1)" aria-label="Decrease quantity">−</button>
+            <input type="number" id="qty-input" class="qty-input" value="1" min="1" max="99" aria-label="Quantity" />
+            <button class="qty-btn" onclick="adjustQty(1)" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="add-to-cart-btn" onclick="addCurrentToCart()">Add to cart</button>
+
+        <!-- Product details accordion -->
+        <div class="accordion">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)" aria-expanded="false">
+            Details & materials
+            <span class="accordion-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="accordion-body" hidden id="detail-materials"></div>
+
+          <button class="accordion-trigger" onclick="toggleAccordion(this)" aria-expanded="false">
+            Shipping & returns
+            <span class="accordion-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="accordion-body" hidden>
+            <p>Free shipping on orders over $150. Standard delivery 5–7 business days. Express available at checkout.</p>
+            <p>Returns accepted within 30 days in original condition. Contact us to initiate a return.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       ABOUT VIEW
+  ============================================================ -->
+  <section class="about-view" id="about-view" hidden aria-label="About NOIR">
+    <div class="about-inner">
+      <p class="hero-eyebrow">Our story</p>
+      <h2 class="about-headline">Less, but <em>better.</em></h2>
+      <div class="about-body">
+        <p>NOIR was founded on a single conviction: most things are unnecessary. What remains — the truly considered, the precisely made, the quietly essential — is worth celebrating.</p>
+        <p>This store is a portfolio project built with vanilla HTML, CSS, and JavaScript. It demonstrates a complete e-commerce flow: product listing, filtering, sorting, a product detail page, an interactive cart, and a multi-step checkout with form validation.</p>
+        <p>Every interaction, animation, and layout decision was crafted intentionally — no frameworks, no dependencies, just clean code.</p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat">
+          <span class="stat-num">12</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="about-stat">
+          <span class="stat-num">4</span>
+          <span class="stat-label">Categories</span>
+        </div>
+        <div class="about-stat">
+          <span class="stat-num">0</span>
+          <span class="stat-label">Dependencies</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="showView('shop')">Shop the collection</button>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CART SIDEBAR
+  ============================================================ -->
+  <!-- Overlay behind cart -->
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()" aria-hidden="true"></div>
+
+  <aside class="cart-sidebar" id="cart-sidebar" aria-label="Shopping cart" aria-hidden="true">
+
+    <div class="cart-header">
+      <h2 class="cart-title">Your cart</h2>
+      <button class="cart-close" onclick="toggleCart()" aria-label="Close cart">✕</button>
+    </div>
+
+    <!-- Cart items list -->
+    <div class="cart-items" id="cart-items" role="list">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Empty state -->
+    <div class="cart-empty" id="cart-empty" aria-live="polite">
+      <p>Your cart is empty.</p>
+      <button class="btn-ghost" onclick="toggleCart()">Continue shopping</button>
+    </div>
+
+    <!-- Cart footer: subtotal + checkout button -->
+    <div class="cart-footer" id="cart-footer" hidden>
+      <div class="cart-subtotal">
+        <span>Subtotal</span>
+        <span id="cart-subtotal-amount">$0.00</span>
+      </div>
+      <p class="cart-tax-note">Taxes and shipping calculated at checkout</p>
+      <button class="btn-primary" style="width:100%;" onclick="startCheckout()">Proceed to checkout</button>
+      <button class="btn-ghost" style="width:100%; margin-top:8px;" onclick="toggleCart()">Continue shopping</button>
+    </div>
+
+  </aside>
+
+
+  <!-- ============================================================
+       CHECKOUT MODAL
+  ============================================================ -->
+  <div class="modal-overlay" id="checkout-overlay" hidden>
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-label="Checkout">
+
+      <!-- Step indicator -->
+      <div class="checkout-steps" id="checkout-steps">
+        <div class="step active" data-step="1">01 Contact</div>
+        <div class="step-divider">—</div>
+        <div class="step" data-step="2">02 Shipping</div>
+        <div class="step-divider">—</div>
+        <div class="step" data-step="3">03 Payment</div>
+      </div>
+
+      <!-- Close button -->
+      <button class="modal-close" onclick="closeCheckout()" aria-label="Close checkout">✕</button>
+
+      <!-- STEP 1: Contact -->
+      <div class="checkout-step" id="step-1">
+        <h3 class="step-title">Contact information</h3>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="email">Email address</label>
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group half">
+            <label for="first-name">First name</label>
+            <input type="text" id="first-name" placeholder="Jane" autocomplete="given-name" required />
+          </div>
+          <div class="form-group half">
+            <label for="last-name">Last name</label>
+            <input type="text" id="last-name" placeholder="Smith" autocomplete="family-name" required />
+          </div>
+        </div>
+        <div class="step-actions">
+          <button class="btn-primary" onclick="nextStep(2)">Continue to shipping</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Shipping -->
+      <div class="checkout-step" id="step-2" hidden>
+        <h3 class="step-title">Shipping address</h3>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="address">Street address</label>
+            <input type="text" id="address" placeholder="123 Main Street" autocomplete="street-address" required />
+          </div>
+          <div class="form-group half">
+            <label for="city">City</label>
+            <input type="text" id="city" placeholder="New York" autocomplete="address-level2" required />
+          </div>
+          <div class="form-group half">
+            <label for="zip">ZIP / Postal code</label>
+            <input type="text" id="zip" placeholder="10001" autocomplete="postal-code" required />
+          </div>
+          <div class="form-group full">
+            <label for="country">Country</label>
+            <select id="country" autocomplete="country">
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="gb">United Kingdom</option>
+              <option value="au">Australia</option>
+              <option value="de">Germany</option>
+              <option value="fr">France</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Shipping method -->
+        <fieldset class="shipping-options">
+          <legend class="form-section-label">Shipping method</legend>
+          <label class="shipping-option">
+            <input type="radio" name="shipping" value="standard" checked />
+            <span class="shipping-label">
+              <span class="shipping-name">Standard (5–7 days)</span>
+              <span class="shipping-price">Free</span>
+            </span>
+          </label>
+          <label class="shipping-option">
+            <input type="radio" name="shipping" value="express" />
+            <span class="shipping-label">
+              <span class="shipping-name">Express (2–3 days)</span>
+              <span class="shipping-price">$12.00</span>
+            </span>
+          </label>
+        </fieldset>
+
+        <div class="step-actions">
+          <button class="btn-ghost" onclick="prevStep(1)">← Back</button>
+          <button class="btn-primary" onclick="nextStep(3)">Continue to payment</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Payment -->
+      <div class="checkout-step" id="step-3" hidden>
+        <h3 class="step-title">Payment</h3>
+
+        <!-- Order summary recap -->
+        <div class="order-summary" id="checkout-order-summary">
+          <!-- Injected by JS -->
+        </div>
+
+        <div class="form-grid" style="margin-top:1.5rem;">
+          <div class="form-group full">
+            <label for="card-number">Card number</label>
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" />
+          </div>
+          <div class="form-group half">
+            <label for="card-expiry">Expiry date</label>
+            <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7" />
+          </div>
+          <div class="form-group half">
+            <label for="card-cvv">CVV</label>
+            <input type="text" id="card-cvv" placeholder="123" maxlength="4" inputmode="numeric" />
+          </div>
+        </div>
+
+        <!-- Demo notice -->
+        <p class="demo-notice">⚠ This is a portfolio demo — no real payment is processed.</p>
+
+        <div class="step-actions">
+          <button class="btn-ghost" onclick="prevStep(2)">← Back</button>
+          <button class="btn-primary" onclick="placeOrder()">Place order</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Confirmation -->
+      <div class="checkout-step" id="step-4" hidden>
+        <div class="confirmation">
+          <div class="confirmation-icon" aria-hidden="true">✓</div>
+          <h3 class="step-title">Order placed!</h3>
+          <p class="confirmation-body">Thank you for your order. A confirmation has been sent to your email (in a real store). Your order number is <strong id="order-number"></strong>.</p>
+          <button class="btn-primary" onclick="closeCheckout(); resetCart();">Back to shop</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       TOAST NOTIFICATION
+  ============================================================ -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">NOIR</p>
+      <p class="footer-note">Portfolio project · Built with vanilla HTML, CSS & JS · No frameworks</p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <span>·</span>
+        <a href="#" onclick="showView('about'); return false;">About</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
