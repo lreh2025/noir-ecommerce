@@ -62,6 +62,12 @@
   ============================================================ -->
   <main class="shop-view" id="shop-view">
 
+    <!-- Search bar -->
+    <div class="search-bar">
+      <label for="search-input" class="sr-only">Search products</label>
+      <input type="text" id="search-input" class="search-input" placeholder="Search products..." aria-label="Search products" oninput="searchProducts(this.value)" />
+    </div>
+
     <!-- Filter / sort bar -->
     <div class="filter-bar">
       <div class="filter-group" role="group" aria-label="Filter by category">

@@ -18,6 +18,7 @@
 
 let currentFilter = 'all';   // active filter category
 let currentSort   = 'default'; // active sort key
+let currentSearch = '';      // active search query
 let currentProduct = null;   // product shown in detail view
 let cartOpen      = false;   // cart sidebar state
 let checkoutStep  = 1;       // current checkout step (1-4)
@@ -85,6 +86,14 @@ function renderProducts() {
   let list = currentFilter === 'all'
     ? [...PRODUCTS]
     : PRODUCTS.filter(p => p.category === currentFilter);
+
+  // 1b. Filter by search query (name or description match)
+  if (currentSearch) {
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(currentSearch) ||
+      p.description.toLowerCase().includes(currentSearch)
+    );
+  }
 
   // 2. Sort
   switch (currentSort) {
@@ -587,3 +596,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Shop view is also rendered but hero overlays it visually on first load
   // (Both share the same scroll container; hero is full-height)
 });
+
+/**
+ * Set the active search query and re-render the grid.
+ * @param {string} query
+ */
+function searchProducts(query) {
+  currentSearch = query.trim().toLowerCase();
+  renderProducts();
+}
